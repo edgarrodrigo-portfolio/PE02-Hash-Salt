@@ -174,4 +174,42 @@ public class Parts {
         }
     }
 
+    // ---------- Part 5 ----------
+
+    static void part5() {
+        usuaris.clear();
+
+        System.out.println("\n--- Prova 1: dos usuaris amb la mateixa contrasenya ---");
+        registrarUsuari("anna", "1234");
+        registrarUsuari("pere", "1234");
+        System.out.println("anna -> salt: " + usuaris.get("anna")[0]);
+        System.out.println("anna -> hash: " + usuaris.get("anna")[1]);
+        System.out.println("pere -> salt: " + usuaris.get("pere")[0]);
+        System.out.println("pere -> hash: " + usuaris.get("pere")[1]);
+        System.out.println(usuaris.get("anna")[1].equals(usuaris.get("pere")[1])
+                ? "Hashes iguals" : "Resultat: els hashes son DIFERENTS gracies a la salt.");
+
+        System.out.println("\n--- Prova 2: contrasenya correcta ---");
+        System.out.println(login("anna", "1234") ? "Acces permes" : "Acces denegat");
+
+        System.out.println("\n--- Prova 3: contrasenya incorrecta ---");
+        System.out.println(login("anna", "abcd") ? "Acces permes" : "Acces denegat");
+
+        System.out.println("\n--- Prova 4: salt diferent de la guardada ---");
+        String saltFalsa = generarSalt();
+        String hashAmbSaltFalsa = hashAmbSalt("1234", saltFalsa);
+        System.out.println("Hash guardat       : " + usuaris.get("anna")[1]);
+        System.out.println("Hash amb altra salt: " + hashAmbSaltFalsa);
+        System.out.println(hashAmbSaltFalsa.equals(usuaris.get("anna")[1])
+                ? "Coincideixen" : "Resultat: NO coincideixen, tot i que la contrasenya es correcta.");
+
+        System.out.println("\n--- Explicacio ---");
+        System.out.println("Les salts han de ser diferents per a cada registre perque aixi dues");
+        System.out.println("contrasenyes iguals donen hashes diferents. Aixo evita que un atacant");
+        System.out.println("detecti contrasenyes repetides i impedeix usar taules precalculades");
+        System.out.println("(rainbow tables) o atacar tots els usuaris alhora.");
+        System.out.println("Cal conservar la salt de cada usuari perque sense ella no es pot");
+        System.out.println("recalcular el hash en iniciar sessio i no es podria verificar la");
+        System.out.println("contrasenya. La salt no es secreta, nomes cal que sigui unica.");
+    }
 }
