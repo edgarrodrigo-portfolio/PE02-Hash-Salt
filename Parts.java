@@ -147,4 +147,31 @@ public class Parts {
         // La contrasenya no es guarda ni es mostra
     }
 
+    // ---------- Part 4 ----------
+
+    // Comprova les credencials amb la salt guardada
+    static boolean login(String nom, String password) {
+        String[] dades = usuaris.get(nom);
+        if (dades == null) {
+            return false;
+        }
+        String hashCalculat = hashAmbSalt(password, dades[0]);
+        return hashCalculat.equals(dades[1]);
+    }
+
+    static void iniciarSessio() {
+        System.out.print("Nom d'usuari: ");
+        String nom = scanner.nextLine();
+        System.out.print("Contrasenya: ");
+        String password = scanner.nextLine();
+
+        if (!usuaris.containsKey(nom)) {
+            System.out.println("Error: l'usuari no esta registrat.");
+        } else if (login(nom, password)) {
+            System.out.println("Acces permes. Benvingut, " + nom + "!");
+        } else {
+            System.out.println("Error: contrasenya incorrecta.");
+        }
+    }
+
 }
