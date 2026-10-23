@@ -1,4 +1,7 @@
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
@@ -63,6 +66,41 @@ public class Parts {
             System.out.println(i + ": " + sha256(m1));
         }
         System.out.println("El resultat es manté sempre igual.");
+    }
+
+    // ---------- Part 2 ----------
+
+    static void part2() {
+        try {
+            // Emissor: desa el missatge i el hash original
+            System.out.print("Emissor, escriu el missatge: ");
+            String missatge = scanner.nextLine();
+            Files.write(Paths.get("missatge.txt"), missatge.getBytes(StandardCharsets.UTF_8));
+            String hashOriginal = sha256(missatge);
+            Files.write(Paths.get("missatge.hash"), hashOriginal.getBytes(StandardCharsets.UTF_8));
+            System.out.println("Missatge desat a missatge.txt");
+            System.out.println("Hash original desat a missatge.hash: " + hashOriginal);
+
+            // Receptor
+            System.out.println("\n--- Recepcio del missatge ---");
+            System.out.println("(Pots crear a ma un fitxer missatgeCanviat.txt amb una versio modificada)");
+            System.out.print("Nom del fitxer rebut: ");
+            String nomFitxer = scanner.nextLine();
+
+            byte[] bytesRebuts = Files.readAllBytes(Paths.get(nomFitxer));
+            String hashRebut = sha256(bytesRebuts);
+            String hashGuardat = new String(Files.readAllBytes(Paths.get("missatge.hash")), StandardCharsets.UTF_8);
+
+            System.out.println("Hash original: " + hashGuardat);
+            System.out.println("Hash rebut   : " + hashRebut);
+            if (hashRebut.equals(hashGuardat)) {
+                System.out.println("Els hashes coincideixen: el missatge NO ha estat modificat.");
+            } else {
+                System.out.println("ATENCIO: s'ha detectat una modificacio del missatge!");
+            }
+        } catch (IOException e) {
+            System.out.println("Error amb els fitxers: " + e.getMessage());
+        }
     }
 
 }
