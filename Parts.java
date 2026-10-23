@@ -4,11 +4,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Parts {
 
     static Scanner scanner = new Scanner(System.in);
+
+    // Usuaris en memòria: nom -> {salt, hash}
+    static HashMap<String, String[]> usuaris = new HashMap<>();
 
     // ---------- Funcions auxiliars ----------
 
@@ -35,6 +40,18 @@ public class Parts {
             textOut.append(String.format("%02X", bytes[i] & 0xFF));
         }
         return textOut.toString();
+    }
+
+    // Genera una salt aleatoria de 16 bytes en hexadecimal
+    static String generarSalt() {
+        byte[] salt = new byte[16];
+        new SecureRandom().nextBytes(salt);
+        return aHex(salt);
+    }
+
+    // Hash de (salt + contrasenya)
+    static String hashAmbSalt(String password, String salt) {
+        return sha256(salt + password);
     }
 
     // ---------- Part 1 ----------
@@ -101,6 +118,33 @@ public class Parts {
         } catch (IOException e) {
             System.out.println("Error amb els fitxers: " + e.getMessage());
         }
+    }
+
+    // ---------- Part 3 ----------
+
+    // Registra un usuari; retorna false si ja existeix
+    static boolean registrarUsuari(String nom, String password) {
+        if (usuaris.containsKey(nom)) {
+            return false;
+        }
+        String salt = generarSalt();
+        String hash = hashAmbSalt(password, salt);
+        usuaris.put(nom, new String[]{salt, hash});
+        return true;
+    }
+
+    static void registrar() {
+        System.out.print("Nom d'usuari: ");
+        String nom = scanner.nextLine();
+        System.out.print("Contrasenya: ");
+        String password = scanner.nextLine();
+
+        if (registrarUsuari(nom, password)) {
+            System.out.println("Usuari registrat correctament.");
+        } else {
+            System.out.println("Aquest usuari ja existeix.");
+        }
+        // La contrasenya no es guarda ni es mostra
     }
 
 }
